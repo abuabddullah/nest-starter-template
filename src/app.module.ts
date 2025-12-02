@@ -1,18 +1,18 @@
 import { Module, OnModuleInit } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import appConfig from './config/app.config';
+import { DatabaseModule } from './database/database.module';
+import { DatabaseService } from './database/database.service';
+import { IpThrottlerGuard } from './shared/guards/ip.throttler.guard';
+import { JwtAuthGuard } from './shared/guards/jwt.guard';
+import { RolesGuard } from './shared/guards/roles.guard';
+import { TemplatesService } from './templates/templates.service';
 import { UserModule } from './user/user.module';
 import { UtilsService } from './utils/utils.service';
-import { TemplatesService } from './templates/templates.service';
-import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './database/database.module';
-import appConfig from './config/app.config';
-import { IpThrottlerGuard } from './shared/guards/ip.throttler.guard';
-import { RolesGuard } from './shared/guards/roles.guard';
-import { JwtAuthGuard } from './shared/guards/jwt.guard';
-import { DatabaseService } from './database/database.service';
-import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
