@@ -8,7 +8,7 @@ export class AppService {
   private readonly config: AppConfig;
 
   constructor() {
-    this.config = appConfig();
+    this.config = appConfig(); // call the function directly
   }
 
   getHello(): string {

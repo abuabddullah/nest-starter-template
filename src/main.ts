@@ -1,9 +1,34 @@
+import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
+import { ResponseInterceptor } from './shared/Interceptors/response.interceptor';
+import { CustomValidationPipe } from './shared/pipes/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT') ?? 3000;
+
+  // Global Prefix
+  app.setGlobalPrefix('api');
+
+  // Versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
+  // Error & Response Interceptors
+  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalInterceptors(new ResponseInterceptor());
+
+  // Globall Validation Pipes
+  app.useGlobalPipes(new CustomValidationPipe());
+
+  // Global Guards
+  // app.useGlobalGuards(new JwtGuard());
 
   //validating incoming requests bodies automitacally
   app.useGlobalPipes(
@@ -15,6 +40,15 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  // Security
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+  });
+  app.use(helmet());
+
+  // Run the server
+  await app.listen(port);
+  console.log('\x1b[1m\x1b[33m%s\x1b[0m', `Server is running on port ${port}`);
 }
 bootstrap();

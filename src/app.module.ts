@@ -1,8 +1,18 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
+import { UtilsService } from './utils/utils.service';
+import { TemplatesService } from './templates/templates.service';
+import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './database/database.module';
 import appConfig from './config/app.config';
+import { IpThrottlerGuard } from './shared/guards/ip.throttler.guard';
+import { RolesGuard } from './shared/guards/roles.guard';
+import { JwtAuthGuard } from './shared/guards/jwt.guard';
+import { DatabaseService } from './database/database.service';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -11,10 +21,33 @@ import appConfig from './config/app.config';
       // validationSchema: joi.object({
       //   APP_NAME: Joi.string().default('defaultApp'),
       // }),
+      envFilePath: '.env', // explicitly load .env
       load: [appConfig],
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
+    UserModule,
+    AuthModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    UtilsService,
+    TemplatesService,
+    JwtAuthGuard,
+    RolesGuard,
+    IpThrottlerGuard,
+  ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async onModuleInit() {
+    await this.databaseService.createSuperAdmin();
+  }
+}
