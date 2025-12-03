@@ -1,9 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Document, Model } from 'mongoose';
-import { OAuthProviderEnum, RoleEnum } from 'src/shared/enum/user.enum';
-import { CreateUserDtoV2 } from './dto/create-user.dto';
 import { CreateUserDto } from 'src/auth/dto/createUser.dto';
+import { OAuthProviderEnum, RoleEnum } from 'src/shared/enum/user.enum';
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -117,6 +116,9 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+// Set TTL to remove the document 5 minutes after otpExpiry
+UserSchema.index({ otpExpiry: 1 }, { expireAfterSeconds: 5 * 60 });
 
 UserSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
