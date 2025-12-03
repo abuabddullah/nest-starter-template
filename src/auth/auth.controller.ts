@@ -1,38 +1,3 @@
-// import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-// import { AuthService } from './auth.service';
-// import { CreateAuthDto } from './dto/create-auth.dto';
-// import { UpdateAuthDto } from './dto/update-auth.dto';
-
-// @Controller('auth')
-// export class AuthController {
-//   constructor(private readonly authService: AuthService) {}
-
-//   @Post()
-//   create(@Body() createAuthDto: CreateAuthDto) {
-//     return this.authService.create(createAuthDto);
-//   }
-
-//   @Get()
-//   findAll() {
-//     return this.authService.findAll();
-//   }
-
-//   @Get(':id')
-//   findOne(@Param('id') id: string) {
-//     return this.authService.findOne(+id);
-//   }
-
-//   @Patch(':id')
-//   update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-//     return this.authService.update(+id, updateAuthDto);
-//   }
-
-//   @Delete(':id')
-//   remove(@Param('id') id: string) {
-//     return this.authService.remove(+id);
-//   }
-// }
-
 import {
   Body,
   Controller,
@@ -42,21 +7,21 @@ import {
   Version,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/createUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
+import { CreateUserDto } from './dto/createUser.dto';
 import { ForgotPasswordDto } from './dto/forgotPassword.dto';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { OtpUserDto } from './dto/otpUser.dto';
 import { RefreshUserDto } from './dto/refreshUser.dto';
 import { VerifyOtpDto } from './dto/verifyOtp.dto';
 
-import { IpThrottlerGuard } from 'src/shared/guards/ip.throttler.guard';
+import { Throttle } from '@nestjs/throttler';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { RoleEnum } from 'src/shared/enum/user.enum';
+import { IpThrottlerGuard } from 'src/shared/guards/ip.throttler.guard';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
-import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { JwtThrottlerGuard } from 'src/shared/guards/jwt.throttler.guard';
-import { Throttle } from '@nestjs/throttler';
+import { RolesGuard } from 'src/shared/guards/roles.guard';
 
 @Controller('auth')
 @UseGuards(IpThrottlerGuard)

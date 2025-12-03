@@ -5,6 +5,7 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { OAuthProviderEnum } from 'src/shared/enum/user.enum';
 
@@ -27,10 +28,21 @@ export class CreateUserDto {
   @IsOptional()
   location?: string;
 
-  @IsOptional()
+  // ✅ Password required ONLY if oauthProvider is NOT provided
+  @ValidateIf((o) => !o.oauthProvider)
+  @IsNotEmpty({
+    message: 'Password is required when no OAuth provider is used',
+  })
+  @IsString()
+  @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
 
-  @IsOptional()
+  // ✅ Confirm password is also required conditionally
+  @ValidateIf((o) => !o.oauthProvider)
+  @IsNotEmpty({
+    message: 'Confirm password is required when no OAuth provider is used',
+  })
+  @IsString()
   confirm_password: string;
 
   @IsString({ message: 'Avatar must be a string' })
