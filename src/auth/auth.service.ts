@@ -28,12 +28,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 // import { User, UserModel } from '../user/user.schema';
-import { User } from '../user/user.schema';
-import type { UserModel } from '../user/user.schema';
 import { JwtPayload } from 'jsonwebtoken';
 import { UtilsService } from 'src/utils/utils.service';
-import { CreateUserDto } from './dto/createUser.dto';
+import type { UserModel } from '../user/user.schema';
+import { User } from '../user/user.schema';
 import { ChangePasswordDto } from './dto/changePassword.dto';
+import { CreateUserDto } from './dto/createUser.dto';
 import { ForgotPasswordDto } from './dto/forgotPassword.dto';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { OtpUserDto } from './dto/otpUser.dto';
@@ -92,7 +92,9 @@ export class AuthService {
   async login(
     loginUserDto: LoginUserDto,
   ): Promise<{ user: any; accessToken: string; refreshToken: string }> {
-    const user = await this.userModel.findOne({ email: loginUserDto.email });
+    const user = await this.userModel
+      .findOne({ email: loginUserDto.email })
+      .select('+password');
 
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
@@ -278,7 +280,9 @@ export class AuthService {
     if (changePasswordDto.password !== changePasswordDto.confirm_password)
       throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
 
-    const userFromDB = await this.userModel.findById(user.id);
+    const userFromDB = await this.userModel
+      .findById(user.id)
+      .select('+password');
 
     if (!userFromDB)
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
