@@ -43,8 +43,7 @@ export class User extends Document {
     required: function (this: CreateUserDto) {
       return !this.oauthProvider; // only required if NOT oauth user
     },
-    // required: true,
-    // select: false
+    select: false,
   })
   password: string;
 
