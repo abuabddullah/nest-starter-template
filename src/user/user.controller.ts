@@ -1,35 +1,58 @@
-// import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// import {
+//   Body,
+//   Controller,
+//   Delete,
+//   Get,
+//   Patch,
+//   Post,
+//   Put,
+//   Req,
+//   UseGuards,
+//   Version,
+// } from '@nestjs/common';
 // import { UserService } from './user.service';
-// import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
+// import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
+// import { Roles } from 'src/shared/decorators/roles.decorator';
+// import { RolesGuard } from 'src/shared/guards/roles.guard';
+// import { JwtThrottlerGuard } from 'src/shared/guards/jwt.throttler.guard';
+// import { RoleEnum } from 'src/shared/enum/user.enum';
 
 // @Controller('user')
 // export class UserController {
 //   constructor(private readonly userService: UserService) {}
 
-//   @Post()
-//   create(@Body() createUserDto: CreateUserDto) {
-//     return this.userService.create(createUserDto);
+//   @Version('1')
+//   @Get('/')
+//   @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN, RoleEnum.USER)
+//   @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
+//   profile(@Req() req: any) {
+//     return req.user;
 //   }
 
-//   @Get()
-//   findAll() {
-//     return this.userService.findAll();
+//   @Version('1')
+//   @Post('/')
+//   @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN, RoleEnum.USER)
+//   @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
+//   admin(@Body() body: any) {
+//     return body;
 //   }
 
-//   @Get(':id')
-//   findOne(@Param('id') id: string) {
-//     return this.userService.findOne(+id);
+//   @Version('1')
+//   @Put('/')
+//   update() {
+//     return 'update';
 //   }
 
-//   @Patch(':id')
-//   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-//     return this.userService.update(+id, updateUserDto);
+//   @Version('1')
+//   @Patch('/')
+//   change() {
+//     return 'change';
 //   }
 
-//   @Delete(':id')
-//   remove(@Param('id') id: string) {
-//     return this.userService.remove(+id);
+//   @Version('1')
+//   @Delete('/')
+//   delete() {
+//     return 'delete';
 //   }
 // }
 
@@ -38,12 +61,16 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Put,
   Req,
   UseGuards,
   Version,
+  UsePipes,
+  ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
@@ -51,42 +78,91 @@ import { Roles } from 'src/shared/decorators/roles.decorator';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { JwtThrottlerGuard } from 'src/shared/guards/jwt.throttler.guard';
 import { RoleEnum } from 'src/shared/enum/user.enum';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from 'src/auth/dto/createUser.dto';
+import { ParseObjectIdPipe } from 'src/shared/pipes/objectId.pipe';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // -------------------------------
+  // CURRENT USER PROFILE
+  // -------------------------------
   @Version('1')
-  @Get('/')
-  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN, RoleEnum.USER)
+  @Get('/profile')
+  @Roles(RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
   profile(@Req() req: any) {
-    return req.user;
+    return this.userService.profile(req.user.id);
   }
 
+  // -------------------------------
+  // GET ALL USERS unpaginated
+  // -------------------------------
   @Version('1')
-  @Post('/')
-  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN, RoleEnum.USER)
+  @Get('/unpaginated')
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
-  admin(@Body() body: any) {
-    return body;
+  findAllUnpaginated() {
+    return this.userService.findAllUnpaginated();
+  }
+  @Version('1')
+  @Get('/')
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
+  findAll(@Query() query: Record<string, unknown>) {
+    return this.userService.findAll(query);
+  }
+  // -------------------------------
+  // GET USER BY ID
+  // -------------------------------
+  @Version('1')
+  @Get('/:id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
+  findOne(@Param('id', ParseObjectIdPipe) id: string) {
+    return this.userService.findOne(id);
   }
 
+  // -------------------------------
+  // UPDATE USER
+  // -------------------------------
   @Version('1')
-  @Put('/')
-  update() {
-    return 'update';
+  @Put('/:id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  update(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, dto);
   }
 
+  // -------------------------------
+  // PATCH USER
+  // -------------------------------
   @Version('1')
-  @Patch('/')
-  change() {
-    return 'change';
+  @Patch('/:id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  patch(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, dto);
   }
 
+  // -------------------------------
+  // DELETE USER
+  // -------------------------------
   @Version('1')
-  @Delete('/')
-  delete() {
-    return 'delete';
+  @Delete('/:id')
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
+  remove(@Param('id', ParseObjectIdPipe) id: string) {
+    return this.userService.remove(id);
   }
 }

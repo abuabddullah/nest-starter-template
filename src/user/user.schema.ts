@@ -72,6 +72,11 @@ export class User extends Document {
     default: 'https://i.ibb.co/z5YHLV9/profile.png',
   })
   avatar: string;
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  isDeleted: boolean;
 
   // Auth related fields
 
