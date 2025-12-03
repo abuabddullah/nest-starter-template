@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import figlet from 'figlet';
 
 @Injectable()
 export class TemplatesService {
@@ -189,5 +190,25 @@ export class TemplatesService {
           </script>
         </body>
         </html>`;
+  }
+
+  async figletChalkTemplate() {
+    const chalk = (await import('chalk')).default;
+    return figlet('OOAAOW', (err, data) => {
+      if (err) {
+        console.log('Something went wrong...');
+        console.dir(err);
+        return;
+      }
+
+      // Print the title with color
+      console.log(chalk.green(data));
+
+      // Print version info and system details with color
+      console.log(chalk.cyan('VERSION INFO:'));
+      console.log(chalk.yellow('Template: 1.0'));
+      console.log(chalk.magenta('Node.js: v20.16.0'));
+      console.log(chalk.blue('OS: windows'));
+    });
   }
 }
