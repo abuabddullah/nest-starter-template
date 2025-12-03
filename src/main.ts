@@ -11,9 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') ?? 101010101010;
-  console.log('🚀 ~ bootstrap ~ port:', port);
   const host = configService.get<string>('common.ip') || '0.0.0.0';
-  console.log('🚀 ~ bootstrap ~ host:', host);
 
   // Global Prefix
   app.setGlobalPrefix('api');
@@ -52,7 +50,9 @@ async function bootstrap() {
 
   // Run the server
   await app.listen(port, host);
-  console.log(`🚀 Server running at http://${host}:${port}/api`);
-  console.log('\x1b[1m\x1b[33m%s\x1b[0m', `Server is running on port ${port}`);
+  console.log(
+    '\x1b[1m\x1b[33m%s\x1b[0m',
+    `🚀 Server running at http://${host}:${port}/api`,
+  );
 }
 bootstrap();
