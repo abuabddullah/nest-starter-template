@@ -5,8 +5,6 @@ import { DatabaseService } from './database.service';
 import { User, UserSchema } from 'src/user/user.schema';
 import appConfig from 'src/config/app.config';
 
-const config = appConfig();
-
 @Module({
   imports: [
     MongooseModule.forRootAsync({

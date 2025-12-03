@@ -1,5 +1,9 @@
 export default () => ({
-  common: { appName: process.env.APP_NAME, ip: process.env.IP },
+  common: {
+    appName: process.env.APP_NAME,
+    ip: process.env.IP,
+    port: process.env.PORT,
+  },
   email: {
     email_host: process.env.EMAIL_HOST,
     email_port: process.env.EMAIL_PORT,
