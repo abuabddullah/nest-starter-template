@@ -28,9 +28,6 @@ async function bootstrap() {
   const host = configService.get<string>('common.ip') || '0.0.0.0';
   const customLogger = new Logger('main.ts');
 
-  // Call the figlet-chalk banner here
-  await templatesService.figletChalkTemplate();
-
   // Global Prefix
   app.setGlobalPrefix('api');
 
@@ -67,12 +64,23 @@ async function bootstrap() {
   app.use(helmet());
 
   // Run the server
-  await app.listen(port, host);
-  console.log(
-    '\x1b[1m\x1b[33m%s\x1b[0m',
-    `🚀 Server running at http://${host}:${port}/api`,
-  );
-  await utilsService.seedAdmin();
-  customLogger.log(`Server running at http://${host}:${port}/api`);
+  const server = await app.listen(port, host, async () => {
+    // Call the figlet-chalk banner here
+    await templatesService.figletChalkTemplate();
+
+    await utilsService.seedAdmin();
+    console.log(
+      '\x1b[1m\x1b[31m%s\x1b[0m',
+      `🚀 Server running at http://${host}:${port}/api`,
+    );
+    console.log(
+      '\x1b[1m\x1b[33m%s\x1b[0m',
+      `🚀 Socket running at http://${host}:${port}`,
+    );
+
+    customLogger.log(`Server running at http://${host}:${port}/api`);
+  });
+
+  return { app, server };
 }
 bootstrap();

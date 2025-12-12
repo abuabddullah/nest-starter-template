@@ -207,10 +207,10 @@ export class TemplatesService {
       console.log(chalk.green(data));
 
       // Print version info and system details with color
-      console.log(chalk.cyan('VERSION INFO:'));
+      console.log(chalk.cyan('VERSION INFO: 1'));
       console.log(chalk.yellow('Template: 1.0'));
-      console.log(chalk.magenta('Node.js: v20.16.0'));
-      console.log(chalk.blue('OS: windows'));
+      console.log(chalk.magenta('Node.js: v22.10.7'));
+      console.log(chalk.blue('OS: linux'));
     });
   }
 

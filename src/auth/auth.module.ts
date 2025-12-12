@@ -18,6 +18,7 @@ import { AuthMiddleware } from './auth.middleware';
 import { UserModule } from '../user/user.module';
 import { UtilsService } from 'src/utils/utils.service';
 import { TemplatesService } from 'src/templates/templates.service';
+import { WebSocketModule } from '../websocket/websocket.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TemplatesService } from 'src/templates/templates.service';
       },
     ]),
     UserModule,
+    WebSocketModule,
   ],
   controllers: [AuthController],
   providers: [

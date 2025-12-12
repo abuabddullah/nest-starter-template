@@ -13,6 +13,7 @@ import { RolesGuard } from './shared/guards/roles.guard';
 import { TemplatesService } from './templates/templates.service';
 import { UserModule } from './user/user.module';
 import { UtilsService } from './utils/utils.service';
+import { WebSocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UtilsService } from './utils/utils.service';
     UserModule,
     AuthModule,
     DatabaseModule,
+    WebSocketModule,
   ],
   controllers: [AppController],
   providers: [

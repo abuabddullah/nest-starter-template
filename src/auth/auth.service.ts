@@ -39,6 +39,7 @@ import { LoginUserDto } from './dto/loginUser.dto';
 import { OtpUserDto } from './dto/otpUser.dto';
 import { RefreshUserDto } from './dto/refreshUser.dto';
 import { VerifyOtpDto } from './dto/verifyOtp.dto';
+import { AppWebSocketGateway } from 'src/websocket/websocket.gateway';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,7 @@ export class AuthService {
     private readonly userModel: UserModel,
 
     private readonly utilsService: UtilsService,
+    private readonly webSocketGateway: AppWebSocketGateway,
   ) {}
 
   async register(
@@ -125,6 +127,13 @@ export class AuthService {
       email: user.email,
     };
 
+    // Send WebSocket notification
+    this.webSocketGateway.server.emit(`notification::${user._id}`, {
+      event: 'login_success',
+      userId: user._id,
+      timestamp: new Date(),
+      message: 'You have successfully logged in',
+    });
     return { user: userFromDB, accessToken, refreshToken };
   }
 
