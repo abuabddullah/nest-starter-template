@@ -43,4 +43,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsString()
   location?: string;
+
+  // couverture?: Express.Multer.File;
+  // video?: Express.Multer.File;
 }

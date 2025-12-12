@@ -13,6 +13,8 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
@@ -20,9 +22,11 @@ import { Roles } from 'src/shared/decorators/roles.decorator';
 import { RolesGuard } from 'src/shared/guards/roles.guard';
 import { JwtThrottlerGuard } from 'src/shared/guards/jwt.throttler.guard';
 import { RoleEnum } from 'src/shared/enum/user.enum';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { diskStorage } from 'multer';
 import { CreateUserDto } from 'src/auth/dto/createUser.dto';
 import { ParseObjectIdPipe } from 'src/shared/pipes/objectId.pipe';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -87,13 +91,52 @@ export class UserController {
   // -------------------------------
   @Version('1')
   @Patch('/:id')
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 }], {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          let destination: string;
+          if (file.fieldname === 'video') {
+            destination = './uploads/videos';
+          } else if (
+            file.fieldname === 'couverture' ||
+            file.fieldname === 'avatar' ||
+            file.fieldname === 'image' ||
+            file.fieldname === 'images'
+          ) {
+            destination = './uploads/images';
+          } else if (file.fieldname === 'document') {
+            destination = './uploads/documents';
+          } else {
+            destination = './uploads/others';
+          }
+          cb(null, destination);
+        },
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const extension = file.mimetype.split('/')[1];
+          cb(
+            null,
+            `${file.fieldname}_${file.originalname}_${uniqueSuffix}.${extension}`,
+          );
+        },
+      }),
+    }),
+  )
   @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard, JwtThrottlerGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   patch(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() dto: UpdateUserDto,
+    @UploadedFiles() files: Record<string, Express.Multer.File[]>,
   ) {
+    console.log('🚀 ~ UserController ~ patch ~ dto:', dto);
+    if (files) {
+      const avatarFile = files['avatar'][0];
+      dto.avatar = '/images/' + avatarFile.filename;
+    }
     return this.userService.update(id, dto);
   }
 

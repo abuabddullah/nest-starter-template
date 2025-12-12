@@ -12,9 +12,10 @@ import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
 import { ResponseInterceptor } from './shared/Interceptors/response.interceptor';
 import { CustomValidationPipe } from './shared/pipes/validation.pipe';
 import { TemplatesService } from './templates/templates.service';
-
+import * as path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new ConsoleLogger({
       colors: true,
       json: true,
@@ -26,6 +27,8 @@ async function bootstrap() {
   const host = configService.get<string>('common.ip') || '0.0.0.0';
   const customLogger = new Logger('main.ts');
 
+  // file upload
+  app.useStaticAssets(path.join(__dirname, '../uploads'));
   // Global Prefix
   app.setGlobalPrefix('api');
 
