@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import appConfig from './config/app.config';
+import { TemplatesService } from './templates/templates.service';
 
 type AppConfig = ReturnType<typeof appConfig>;
 
@@ -7,11 +8,12 @@ type AppConfig = ReturnType<typeof appConfig>;
 export class AppService {
   private readonly config: AppConfig;
 
-  constructor() {
+  constructor(private readonly templatesService: TemplatesService) {
     this.config = appConfig(); // call the function directly
   }
 
   getHello(): string {
-    return `Hello World! from ${this.config.common.appName}`;
+    const serverHealthTemplate = this.templatesService.serverHealthTemplate();
+    return serverHealthTemplate;
   }
 }
