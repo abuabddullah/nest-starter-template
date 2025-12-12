@@ -12,6 +12,7 @@ import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
 import { ResponseInterceptor } from './shared/Interceptors/response.interceptor';
 import { CustomValidationPipe } from './shared/pipes/validation.pipe';
 import { TemplatesService } from './templates/templates.service';
+import { UtilsService } from './utils/utils.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -21,7 +22,8 @@ async function bootstrap() {
     }),
   });
   const configService = app.get(ConfigService);
-  const templatesService = new TemplatesService();
+  const templatesService = app.get<TemplatesService>(TemplatesService);
+  const utilsService = app.get<UtilsService>(UtilsService);
   const port = configService.get<number>('PORT') ?? 101010101010;
   const host = configService.get<string>('common.ip') || '0.0.0.0';
   const customLogger = new Logger('main.ts');
@@ -70,6 +72,7 @@ async function bootstrap() {
     '\x1b[1m\x1b[33m%s\x1b[0m',
     `🚀 Server running at http://${host}:${port}/api`,
   );
+  await utilsService.seedAdmin();
   customLogger.log(`Server running at http://${host}:${port}/api`);
 }
 bootstrap();
