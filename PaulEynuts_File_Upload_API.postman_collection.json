@@ -1,0 +1,140 @@
+{
+  "info": {
+    "name": "PaulEynuts File Upload API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "File Management",
+      "item": [
+        {
+          "name": "Upload Single File",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/upload/single",
+          "host": ["{{base_url}}"],
+          "path": ["upload", "single"]
+        },
+        "description": "Upload a single file to the server"
+      },
+      "response": []
+        },
+        {
+          "name": "Upload Multiple Files",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "files",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/upload/multiple",
+          "host": ["{{base_url}}"],
+          "path": ["upload", "multiple"]
+        },
+        "description": "Upload multiple files to the server"
+      },
+      "response": []
+        },
+        {
+          "name": "Upload File with Field",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            },
+            {
+              "key": "fieldName",
+              "value": "exampleField",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/upload/field",
+          "host": ["{{base_url}}"],
+          "path": ["upload", "field"]
+        },
+        "description": "Upload a file with additional form fields"
+      },
+      "response": []
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/upload/file/example.jpg",
+              "host": ["{{base_url}}"],
+              "path": ["upload", "file", "example.jpg"]
+            },
+            "description": "Delete a file by its filename"
+          },
+          "response": []
+        },
+        {
+          "name": "Update File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "oldFilename",
+                  "value": "old-file.jpg",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/upload/update-file",
+              "host": ["{{base_url}}"],
+              "path": ["upload", "update-file"]
+            },
+            "description": "Update a file by replacing the old one with a new one"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}

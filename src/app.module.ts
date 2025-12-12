@@ -14,6 +14,7 @@ import { TemplatesService } from './templates/templates.service';
 import { UserModule } from './user/user.module';
 import { UtilsService } from './utils/utils.service';
 import { WebSocketModule } from './websocket/websocket.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { WebSocketModule } from './websocket/websocket.module';
     AuthModule,
     DatabaseModule,
     WebSocketModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [
