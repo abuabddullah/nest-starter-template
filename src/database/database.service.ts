@@ -38,6 +38,7 @@ export class DatabaseService {
         email: superAdminEmail,
         password: superAdminPassword,
         role: RoleEnum.SUPER_ADMIN,
+        isVerified: true,
       });
 
       console.log('Super user created successfully!');

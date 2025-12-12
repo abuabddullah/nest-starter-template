@@ -7,7 +7,6 @@ import appConfig from 'src/config/app.config';
 import { Model } from 'mongoose';
 import { User } from 'src/user/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { RoleEnum } from 'src/shared/enum/user.enum';
 
 type AppConfig = ReturnType<typeof appConfig>;
 
@@ -16,10 +15,7 @@ export class UtilsService {
   private readonly transporter: nodemailer.Transporter;
   private readonly config: AppConfig;
 
-  constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
-    private readonly templatesService: TemplatesService,
-  ) {
+  constructor(private readonly templatesService: TemplatesService) {
     this.config = appConfig();
     try {
       //   this.transporter = nodemailer.createTransport({
@@ -143,25 +139,5 @@ export class UtilsService {
       );
 
     return jwt.verify(token, secretKey);
-  }
-
-  async seedAdmin() {
-    const existingAdmin = await this.userModel.findOne({
-      email: 'admin@mail.com',
-    });
-
-    if (existingAdmin) {
-      console.log('\x1b[1m\x1b[32m%s\x1b[0m', `🚀 Admin already exists.`);
-      return;
-    }
-
-    await this.userModel.create({
-      name: 'Admin',
-      email: 'admin@mail.com',
-      password: this.ganarateHash('123456789'),
-      role: RoleEnum.SUPER_ADMIN,
-    });
-
-    console.log('\x1b[1m\x1b[32m%s\x1b[0m', `🚀 Admin created successfully!`);
   }
 }

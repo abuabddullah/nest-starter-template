@@ -128,9 +128,9 @@ export class AuthService {
     };
 
     // Send WebSocket notification
-    this.webSocketGateway.server.emit(`notification::${user._id}`, {
+    this.webSocketGateway.server.emit(`notification::${user._id.toString()}`, {
       event: 'login_success',
-      userId: user._id,
+      userId: user._id.toString(),
       timestamp: new Date(),
       message: 'You have successfully logged in',
     });
